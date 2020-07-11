@@ -35,10 +35,11 @@ var success_prompt = function(message, time)
 
 function addBtn(str)
 {
-    $('<button name="btnSave" style="margin-left: 10px;">')
+    $('<button name="btnSave" style="background-image:url(https://img.icons8.com/flat_round/50/000000/link--v1.png);" class="sprite-product-sharing _1CuuK_"></button>')
         .appendTo("#main > div > div.shopee-page-wrapper > div.page-product > div.container > div.product-briefing.flex.card._2cRTS4 > div._30iQ1- > div.flex.justify-center.items-center > div.flex.items-center._3yHPog")
-        .html("縮短網址")
         .show();
+
+    $('<a href=https://icons8.com/ class="_2TLzdl">The shortcut icon is form icons8</a>').appendTo("#main > div > div.shopee-page-wrapper > footer > div > div > div._2F-jVh > div:nth-child(1) > ul").show();
 
     var btn = document.querySelector("#main > div > div.shopee-page-wrapper > div.page-product > div.container > div.product-briefing.flex.card._2cRTS4 > div._30iQ1- > div.flex.justify-center.items-center > div.flex.items-center._3yHPog > button:nth-child(7)");
 
@@ -52,7 +53,7 @@ function addBtn(str)
         clip_area.select();
         document.execCommand('copy');
         clip_area.remove();
-        success_prompt("已複製到剪貼簿", 2000);
+        success_prompt("已複製短網址到剪貼簿", 2000);
 	},false)
 };
 
