@@ -33,6 +33,28 @@ var success_prompt = function(message, time)
     prompt(message, 'alert-success', time);
 };
 
+function Processing()
+{
+    var objUrl, sItemId, sUrl;
+    objUrl = new URL(sUrl = document.querySelector("#main > div > div.shopee-page-wrapper > div.page-product > div.container > div:nth-child(3) > div._1zBnTu.page-product__shop > div._1Sw6Er > div > div._1jOO4S > a").href);
+
+    // Get Item Id
+    sItemId = objUrl.searchParams.get('itemId');
+    console.log("[sItemId] = " + sItemId);
+
+    // Combine the target url
+    sUrl = objUrl.origin + objUrl.pathname + "/" + sItemId
+
+    // Paste to Clipboard
+    var clip_area = document.createElement('textarea');
+    clip_area.textContent = sUrl;
+    document.body.appendChild(clip_area);
+    clip_area.select();
+    document.execCommand('copy');
+    clip_area.remove();
+    success_prompt("已複製短網址到剪貼簿", 2000);
+};
+
 function addBtn(str)
 {
     $('<button name="btnSave" style="background-image:url(https://img.icons8.com/flat_round/50/000000/link--v1.png);" class="sprite-product-sharing _1CuuK_"></button>')
@@ -44,16 +66,7 @@ function addBtn(str)
     var btn = document.querySelector("#main > div > div.shopee-page-wrapper > div.page-product > div.container > div.product-briefing.flex.card._2cRTS4 > div._30iQ1- > div.flex.justify-center.items-center > div.flex.items-center._3yHPog > button:nth-child(7)");
 
     btn.addEventListener('click',function(){
-        var asConttent, sUrl;
-        sUrl =window.location.href;
-        asConttent = sUrl.split('.');
-        sUrl = document.querySelector("#main > div > div.shopee-page-wrapper > div.page-product > div.container > div:nth-child(3) > div._1zBnTu.page-product__shop > div._1Sw6Er > div > div._1jOO4S > a").href + "/" + asConttent[asConttent.length-1];console.log(sUrl);var clip_area = document.createElement('textarea');
-        clip_area.textContent = sUrl;
-        document.body.appendChild(clip_area);
-        clip_area.select();
-        document.execCommand('copy');
-        clip_area.remove();
-        success_prompt("已複製短網址到剪貼簿", 2000);
+       Processing();
 	},false)
 };
 
