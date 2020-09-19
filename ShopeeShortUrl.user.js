@@ -44,6 +44,7 @@ var prompt = async function(message, style, time)
     objMainDiv.innerText = message;
 
     // Show Div
+    objMainDiv.style.opacity = 1;
     objMainDiv.style.display = "block";
 
     // Delay and fadeout
