@@ -44,13 +44,12 @@ var prompt = async function(message, style, time)
     objMainDiv.innerText = message;
 
     // Show Div
-    objMainDiv.style.opacity = 1;
     objMainDiv.style.display = "block";
 
     // Delay and fadeout
     await delay(time);
     await fadeOut(objMainDiv);
-    objMainDiv.style.display = "";
+    objMainDiv.style = "";
 };
 
 var success_prompt = function(message, time)
@@ -71,12 +70,7 @@ function Processing()
     sUrl = objUrl.origin + objUrl.pathname + "/" + sItemId
 
     // Paste to Clipboard
-    var clip_area = document.createElement('textarea');
-    clip_area.textContent = sUrl;
-    document.body.appendChild(clip_area);
-    clip_area.select();
-    document.execCommand('copy');
-    clip_area.remove();
+    navigator.clipboard.writeText(sUrl);
     success_prompt("已複製短網址到剪貼簿", 2000);
 };
 
