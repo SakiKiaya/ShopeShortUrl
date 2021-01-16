@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Shopee short url
 // @namespace    http://tampermonkey.net/
-// @version      0.3
+// @version      0.3.1
 // @description  Copy the short url from shopee
 // @author       You
 // @match        http*://shopee.tw/*
@@ -60,7 +60,7 @@ var success_prompt = function(message, time)
 function Processing()
 {
     var objUrl, sItemId, sUrl;
-    objUrl = new URL(sUrl = document.querySelector("#main > div > div.shopee-page-wrapper > div.page-product > div.container > div:nth-child(3) > div._1zBnTu.page-product__shop > div._1Sw6Er > div > div._1jOO4S > a").href);
+    objUrl = new URL(sUrl = document.querySelector("#main > div > div._1Bj1VS > div.page-product > div.container > div:nth-child(3) > div._1zBnTu.page-product__shop > div._1Sw6Er > div > div._1jOO4S > a").href);
 
     // Get Item Id
     sItemId = objUrl.searchParams.get('itemId');
@@ -86,21 +86,21 @@ function addBtn(str)
     objMainDiv.insertAdjacentHTML('afterbegin', sAlert);
 
     //Select Share block
-    objShare = document.querySelector("#main > div > div.shopee-page-wrapper > div.page-product > div.container > div.product-briefing.flex.card._2cRTS4 > div._30iQ1- > div.flex.justify-center.items-center > div.flex.items-center._3yHPog");
+    objShare = document.querySelector("#main > div > div._1Bj1VS > div.page-product > div.container > div.product-briefing.flex.card._2cRTS4 > div._30iQ1- > div.flex.justify-center.items-center > div.flex.items-center._3yHPog");
 
     // Append item to share block
     sItem = '<button name="btnSave" style="background-image:url(https://img.icons8.com/flat_round/50/000000/link--v1.png);" class="sprite-product-sharing _1CuuK_"></button>';
     objShare.insertAdjacentHTML('beforeend', sItem);
 
     //Select footer block
-    objFooter = document.querySelector("#main > div > div.shopee-page-wrapper > footer > div > div > div._2F-jVh > div:nth-child(1) > ul");
+    objFooter = document.querySelector("#main > div > div._1Bj1VS > footer > div > div > div._2F-jVh > div:nth-child(1) > ul");
 
     // Append Footer to footer block
     sFooter = '<a href=https://icons8.com/ class="_2TLzdl">The shortcut icon is form icons8</a>';
     objFooter.insertAdjacentHTML('beforeend', sFooter);
 
     // Select buttom
-    objBtn = document.querySelector("#main > div > div.shopee-page-wrapper > div.page-product > div.container > div.product-briefing.flex.card._2cRTS4 > div._30iQ1- > div.flex.justify-center.items-center > div.flex.items-center._3yHPog > button:nth-child(7)");
+    objBtn = document.querySelector("#main > div > div._1Bj1VS > div.page-product > div.container > div.product-briefing.flex.card._2cRTS4 > div._30iQ1- > div.flex.justify-center.items-center > div.flex.items-center._3yHPog > button:nth-child(7)");
 
     // Add click event
     objBtn.addEventListener('click',function(){
@@ -112,7 +112,7 @@ var objCheckPage = setInterval(checkPage, 800);
 function checkPage()
 {
     var item;
-    item = document.querySelector("#main > div > div.shopee-page-wrapper > div.page-product > div.container > div:nth-child(3) > div._1zBnTu.page-product__shop > div._1Sw6Er > div > div._1jOO4S");
+    item = document.querySelector("#main > div > div._1Bj1VS > div.page-product > div.container > div:nth-child(3) > div._1zBnTu.page-product__shop > div._1Sw6Er > div > div._1jOO4S");
     if (item != null)
     {
         addBtn();
