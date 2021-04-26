@@ -1,9 +1,9 @@
 // ==UserScript==
 // @name         Shopee short url
 // @namespace    http://tampermonkey.net/
-// @version      0.3.1
+// @version      0.4.0
 // @description  Copy the short url from shopee
-// @author       You
+// @author       SakiKiaya
 // @match        http*://shopee.tw/*
 // @grant        GM_addStyle
 // @require      https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js
@@ -57,10 +57,84 @@ var success_prompt = function(message, time)
     prompt(message, 'alert-success', time);
 };
 
+function GetKeyword(obj, type)
+{
+    if (obj === undefined)
+    {
+        return null
+    }
+    else
+    {
+        if (obj.textContent != "")
+        {
+            return obj.textContent;
+        }
+        if (obj.href != "")
+        {
+            return obj.href;
+        }
+    }
+    return null;
+};
+
+function FindObjByKeyword(obj, value)
+{
+   var list = document.querySelectorAll(obj), i;
+   var sItem = "", nMatchIndex=-1;
+   for (i = 0; i < list.length; ++i) {
+       if (GetKeyword(list[i]) == null) continue;
+       sItem = GetKeyword(list[i], obj);
+       //console.log(list[i]);
+       if (sItem.match(value))
+       {
+           console.log("[Match] " + list[i]);
+           nMatchIndex = i;
+       }
+   }
+   return nMatchIndex == -1 ? null: list[nMatchIndex];
+};
+
+function FindBottonByKeyword(obj, value)
+{
+   var list = document.querySelectorAll(obj), i;
+   var sItem = "", nMatchIndex=-1;
+   for (i = 0; i < list.length; ++i) {
+       sItem = list[i].ariaLabel
+       if (sItem == null) continue;
+       //console.log(sItem);
+       if (sItem.match(value))
+       {
+           console.log("[Match] " + list[i]);
+           nMatchIndex = i;
+       }
+   }
+   return nMatchIndex == -1 ? null: list[nMatchIndex];
+};
+
+var GetShareDiv = function()
+{
+    return FindObjByKeyword('div', '分享');
+};
+
+var GetAvaterUrl = function()
+{
+    return FindObjByKeyword('a', 'categoryId');
+};
+
+var GetTwitterButton = function()
+{
+   //var list = document.querySelectorAll('button');
+   return FindBottonByKeyword('button', 'Twitter');
+};
+
+var GetFooter = function()
+{
+    return FindObjByKeyword('div', '聯絡媒體');
+}
 function Processing()
 {
     var objUrl, sItemId, sUrl;
-    objUrl = new URL(sUrl = document.querySelector("#main > div > div._1Bj1VS > div.page-product > div.container > div:nth-child(3) > div._1zBnTu.page-product__shop > div._1Sw6Er > div > div._1jOO4S > a").href);
+    objUrl = new URL(sUrl = GetAvaterUrl().href);
 
     // Get Item Id
     sItemId = objUrl.searchParams.get('itemId');
@@ -79,28 +153,34 @@ function addBtn(str)
     var objMainDiv, objShare, objFooter, objBtn, sAlert, sItem, sFooter;
 
     // Slect Main Div
-    objMainDiv = document.querySelector("#main");
+    objMainDiv = document.querySelector("div");
 
     // Add alert Div
     sAlert = '<div id="short_url_alert" class="alert alert-success"></div>';
     objMainDiv.insertAdjacentHTML('afterbegin', sAlert);
 
     //Select Share block
-    objShare = document.querySelector("#main > div > div._1Bj1VS > div.page-product > div.container > div.product-briefing.flex.card._2cRTS4 > div._30iQ1- > div.flex.justify-center.items-center > div.flex.items-center._3yHPog");
+    objShare = GetTwitterButton();
 
     // Append item to share block
-    sItem = '<button name="btnSave" style="background-image:url(https://img.icons8.com/flat_round/50/000000/link--v1.png);" class="sprite-product-sharing _1CuuK_"></button>';
-    objShare.insertAdjacentHTML('beforeend', sItem);
+    sItem = objShare.cloneNode(true);
+    sItem.name = "btnSave";
+    sItem.style = "background-image:url(https://img.icons8.com/flat_round/50/000000/link--v1.png);";
+    sItem.setAttribute('aria-label', 'Copy short URL');
+    objShare.parentNode.appendChild(sItem);
 
     //Select footer block
-    objFooter = document.querySelector("#main > div > div._1Bj1VS > footer > div > div > div._2F-jVh > div:nth-child(1) > ul");
+    objFooter = GetFooter();
 
     // Append Footer to footer block
-    sFooter = '<a href=https://icons8.com/ class="_2TLzdl">The shortcut icon is form icons8</a>';
-    objFooter.insertAdjacentHTML('beforeend', sFooter);
+    sFooter = objFooter.children[0].cloneNode(true);
+    objFooter.children[1].appendChild(sFooter);
+    objFooter = objFooter.children[1].children[objFooter.children[1].childElementCount-1];
+    objFooter.textContent = "";
+    objFooter.insertAdjacentHTML('afterend', "<a href='https://icons8.com/'>The shortcut icon is form icons8</a>");
 
-    // Select buttom
-    objBtn = document.querySelector("#main > div > div._1Bj1VS > div.page-product > div.container > div.product-briefing.flex.card._2cRTS4 > div._30iQ1- > div.flex.justify-center.items-center > div.flex.items-center._3yHPog > button:nth-child(7)");
+    // Select button
+    objBtn = document.getElementsByName('btnSave').item(0);
 
     // Add click event
     objBtn.addEventListener('click',function(){
@@ -108,14 +188,20 @@ function addBtn(str)
 	},false)
 };
 
-var objCheckPage = setInterval(checkPage, 800);
+
+var objCheckPage = null;
 function checkPage()
 {
     var item;
-    item = document.querySelector("#main > div > div._1Bj1VS > div.page-product > div.container > div:nth-child(3) > div._1zBnTu.page-product__shop > div._1Sw6Er > div > div._1jOO4S");
+    item = GetTwitterButton();
     if (item != null)
     {
-        addBtn();
+        console.log('add');
         clearInterval(objCheckPage);
+        addBtn();
     }
 }
+
+window.addEventListener('load', (event) => {
+    objCheckPage = setInterval(checkPage, 800);
+});
