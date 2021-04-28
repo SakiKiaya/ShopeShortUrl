@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Shopee short url
 // @namespace    http://tampermonkey.net/
-// @version      0.4.0
+// @version      0.4.1
 // @description  Copy the short url from shopee
 // @author       SakiKiaya
 // @match        http*://shopee.tw/*
@@ -169,16 +169,6 @@ function addBtn(str)
     sItem.setAttribute('aria-label', 'Copy short URL');
     objShare.parentNode.appendChild(sItem);
 
-    //Select footer block
-    objFooter = GetFooter();
-
-    // Append Footer to footer block
-    sFooter = objFooter.children[0].cloneNode(true);
-    objFooter.children[1].appendChild(sFooter);
-    objFooter = objFooter.children[1].children[objFooter.children[1].childElementCount-1];
-    objFooter.textContent = "";
-    objFooter.insertAdjacentHTML('afterend', "<a href='https://icons8.com/'>The shortcut icon is form icons8</a>");
-
     // Select button
     objBtn = document.getElementsByName('btnSave').item(0);
 
@@ -186,6 +176,22 @@ function addBtn(str)
     objBtn.addEventListener('click',function(){
        Processing();
 	},false)
+
+    //Select footer block
+    objFooter = GetFooter();
+    if (objFooter != null)
+    {
+        // Append Footer to footer block
+        sFooter = objFooter.children[0].cloneNode(true);
+        objFooter.children[1].appendChild(sFooter);
+        objFooter = objFooter.children[1].children[objFooter.children[1].childElementCount-1];
+        objFooter.textContent = "";
+        objFooter.insertAdjacentHTML('afterend', "<a href='https://icons8.com/'>The shortcut icon is form icons8</a>");
+    }
+    else
+    {
+        console.log('[Error] objFooter = null');
+    }
 };
 
 
