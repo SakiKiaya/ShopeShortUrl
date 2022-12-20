@@ -1,12 +1,12 @@
 // ==UserScript==
 // @name         Shopee short url
 // @namespace    http://tampermonkey.net/
-// @version      0.4.1
+// @version      0.4.2
 // @description  Copy the short url from shopee
 // @author       SakiKiaya
 // @match        http*://shopee.tw/*
 // @grant        GM_addStyle
-// @require      https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js
+
 // ==/UserScript==
 
 GM_addStyle(`
@@ -65,13 +65,24 @@ function GetKeyword(obj, type)
     }
     else
     {
-        if (obj.textContent != "")
+        switch(type)
         {
-            return obj.textContent;
-        }
-        if (obj.href != "")
-        {
-            return obj.href;
+            case 'a':
+                if (obj.href != "")
+                {
+                    return obj.href;
+                }
+                break;
+            default:
+                if (obj.textContent != "")
+                {
+                    return obj.textContent;
+                }
+                if (obj.href != "")
+                {
+                    return obj.href;
+                }
+                break;
         }
     }
     return null;
@@ -127,9 +138,15 @@ var GetTwitterButton = function()
    return FindBottonByKeyword('button', 'Twitter');
 };
 
+var GetShortButton = function()
+{
+   //var list = document.querySelectorAll('button');
+   return FindBottonByKeyword('button', 'Copy short URL');
+};
+
 var GetFooter = function()
 {
-    return FindObjByKeyword('div', '聯絡媒體');
+    return FindObjByKeyword('div', '關於蝦皮');
 }
 function Processing()
 {
@@ -164,13 +181,13 @@ function addBtn(str)
 
     // Append item to share block
     sItem = objShare.cloneNode(true);
-    sItem.name = "btnSave";
+    sItem.name = "btnShort";
     sItem.style = "background-image:url(https://img.icons8.com/flat_round/50/000000/link--v1.png);";
     sItem.setAttribute('aria-label', 'Copy short URL');
     objShare.parentNode.appendChild(sItem);
 
     // Select button
-    objBtn = document.getElementsByName('btnSave').item(0);
+    objBtn = document.getElementsByName('btnShort').item(0);
 
     // Add click event
     objBtn.addEventListener('click',function(){
@@ -178,17 +195,27 @@ function addBtn(str)
 	},false)
 
     //Select footer block
-    objFooter = GetFooter();
-    if (objFooter != null)
+    var i;
+    for (i = 0; i < 1; ++i)
     {
-        // Append Footer to footer block
-        sFooter = objFooter.children[0].cloneNode(true);
-        objFooter.children[1].appendChild(sFooter);
-        objFooter = objFooter.children[1].children[objFooter.children[1].childElementCount-1];
-        objFooter.textContent = "";
-        objFooter.insertAdjacentHTML('afterend', "<a href='https://icons8.com/'>The shortcut icon is form icons8</a>");
+        objFooter = GetFooter();
+        if (objFooter != null)
+        {
+            // Append Footer to footer block
+            sFooter = objFooter.children[0].cloneNode(true);
+            objFooter.children[1].appendChild(sFooter);
+            objFooter = objFooter.children[1].children[objFooter.children[1].childElementCount-1];
+            objFooter.textContent = "";
+            objFooter.insertAdjacentHTML('afterend', "<a href='https://icons8.com/'>The shortcut icon is form icons8</a>");
+            break;
+        }
+        else
+        {
+            delay(1000);
+            console.log('[Retry'+ i +'] objFooter = null');
+        }
     }
-    else
+    if (objFooter == null)
     {
         console.log('[Error] objFooter = null');
     }
@@ -199,15 +226,19 @@ var objCheckPage = null;
 function checkPage()
 {
     var item;
-    item = GetTwitterButton();
-    if (item != null)
+    if (GetShortButton() == null)
     {
-        console.log('add');
-        clearInterval(objCheckPage);
-        addBtn();
+        item = GetTwitterButton();
+        if (item != null)
+        {
+            console.log('add');
+            addBtn();
+            //clearInterval(objCheckPage);
+        }
     }
 }
 
 window.addEventListener('load', (event) => {
-    objCheckPage = setInterval(checkPage, 800);
+    console.log("[Share] Load")
+    objCheckPage = setInterval(checkPage, 3000);
 });
